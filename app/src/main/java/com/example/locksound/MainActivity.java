@@ -31,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
     private SoundPool mSoundPool;
     private static final int MAX_STREAMS = 2;
     int soundId;
+
     AudioManager audioManager;
     private BroadcastReceiver mReceiver;
     DisplayManager displayManager;
@@ -56,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
         listener = new DisplayManager.DisplayListener() {
 
             int displayState;
+
 
             @Override
             public void onDisplayAdded(int displayId) {
