@@ -1,6 +1,7 @@
 package com.example.locksound;
 
 
+import android.app.KeyguardManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -18,14 +19,12 @@ import android.view.KeyEvent;
 
 public class MainActivity extends AppCompatActivity {
 
-    private SoundPool mSoundPool;
-    private static final int MAX_STREAMS = 2;
-    int soundId;
+
+
+
+    private static final String TAG = "MainActivity";
 
     AudioManager audioManager;
-    private BroadcastReceiver mReceiver;
-    DisplayManager displayManager;
-    DisplayManager.DisplayListener listener;
 
 
     @Override
@@ -33,113 +32,30 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
-        mReceiver = new ScreenReciever();
-
-        IntentFilter intentFilter = new IntentFilter(Intent.ACTION_SCREEN_OFF);
-        intentFilter.addAction(Intent.ACTION_USER_PRESENT);
-        intentFilter.setPriority(999);
-
-        registerReceiver(mReceiver, intentFilter);
-
-        displayManager = (DisplayManager) getSystemService(DISPLAY_SERVICE);
-
-        listener = new DisplayManager.DisplayListener() {
-
-            int displayState;
-
-
-            @Override
-            public void onDisplayAdded(int displayId) {
-                Log.e("SCREEN", "onDisplayAdded");
-            }
-
-            @Override
-            public void onDisplayRemoved(int displayId) {
-                Log.e("SCREEN", "onDisplayRemoved");
-            }
-
-            @Override
-            public void onDisplayChanged(int displayId) {
-                int currentState = displayManager.getDisplay(displayId).getState();
-                Log.e("SCREEN", "Curr: " + currentState);
-                if (currentState != displayState && currentState != Display.STATE_ON) {
-
-                    Log.e("SCREEN", "Screen is off/on");
-                    playSound();
-
-
-                }
-                displayState = currentState;
-            }
-        };
-
-        displayManager.registerDisplayListener(listener, null);
+        SoundKeeper soundKeeper = new SoundKeeper(this);
 
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 
         setVolumeControlStream(AudioManager.STREAM_SYSTEM);
 
-        mSoundPool = new SoundPool.Builder()
-                .setAudioAttributes(getAttributes())
-                .setMaxStreams(MAX_STREAMS)
-                .build();
 
-        soundId = mSoundPool.load(this, R.raw.lockkkkkkk, 1);
+        Intent intent = new Intent(this, DisplayService.class);
+       // intent.putExtra("Sound", soundKeeper);
+
+        startService(intent);
+
     }
 
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        displayManager.unregisterDisplayListener(listener);
-    }
 
-    public void playSound() {
-
-        float curVolume = audioManager.getStreamVolume(AudioManager.STREAM_SYSTEM);
-        float maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_SYSTEM);
-        float leftVolume = curVolume / maxVolume;
-        float rightVolume = curVolume / maxVolume;
-
-        mSoundPool.play(soundId,
-                leftVolume,
-                rightVolume,
-                1,
-                0,
-                /*Скорость воспроизведения*/1.0f);
     }
 
 
-    private AudioAttributes getAttributes() {
 
-        AudioAttributes audioAttributes = new AudioAttributes.Builder()
-                .setUsage(AudioAttributes.USAGE_ASSISTANCE_SONIFICATION)
-                .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-                .build();
 
-        return audioAttributes;
-    }
 
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        Log.e("SCREEN", "onKeyDown");
-        if (keyCode == KeyEvent.KEYCODE_POWER) {
-            Log.e("SCREEN", "onKeyDown.Power");
-            return true;
-        }
-
-        return super.onKeyDown(keyCode, event);
-    }
-
-    @Override
-    public boolean dispatchKeyEvent(KeyEvent event) {
-        Log.e("SCREEN", "dispatchKeyEvent");
-        if (event.getKeyCode() == KeyEvent.KEYCODE_POWER) {
-            Log.e("SCREEN", "dispatchKeyEvent.Power");
-            return true;
-        }
-        return super.dispatchKeyEvent(event);
-    }
 
 }
