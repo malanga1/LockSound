@@ -2,26 +2,30 @@ package com.example.locksound;
 
 import android.content.Context;
 import android.media.AudioAttributes;
-import android.media.AudioManager;
 import android.media.SoundPool;
-import android.os.Parcel;
-import android.os.Parcelable;
 
-import java.io.Serializable;
 
 public class SoundKeeper {
 
     private SoundPool mSoundPool;
     private static final int MAX_STREAMS = 2;
     int soundId;
+    private static SoundKeeper instance;
 
-    public SoundKeeper(Context context){
+    private SoundKeeper(Context context){
         mSoundPool = new SoundPool.Builder()
                 .setAudioAttributes(getAttributes())
                 .setMaxStreams(MAX_STREAMS)
                 .build();
 
         soundId = mSoundPool.load(context, R.raw.lockkkkkkk, 1);
+    }
+
+    public static SoundKeeper getInstance(Context context){
+        if(instance == null){
+            instance = new SoundKeeper(context);
+        }
+        return instance;
     }
 
     private AudioAttributes getAttributes() {

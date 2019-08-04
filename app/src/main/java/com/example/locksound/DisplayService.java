@@ -22,7 +22,8 @@ public class DisplayService extends Service {
     DisplayManager.DisplayListener listener;
     KeyguardManager mKeyguardManager;
     ScreenReceiver mScreenReceiver;
-    //SoundKeeper mSoundKeeper;
+
+    SoundKeeper mSoundKeeper;
 
 
     public DisplayService() {
@@ -67,7 +68,7 @@ public class DisplayService extends Service {
                 if (currentState != displayState && currentState != Display.STATE_ON) {
                     if(!mKeyguardManager.inKeyguardRestrictedInputMode()){
                         Log.e(TAG, "Screen was locked");
-                       // mSoundKeeper.playSound();
+                        mSoundKeeper.playSound();
                     }
 
 
@@ -77,7 +78,10 @@ public class DisplayService extends Service {
             }
         };
 
+
         displayManager.registerDisplayListener(listener, null);
+
+        mSoundKeeper = SoundKeeper.getInstance(this);
 
         startForeground(777, getServiceNotification());
 

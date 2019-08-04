@@ -7,11 +7,17 @@ import android.util.Log;
 
 public class ScreenReceiver extends BroadcastReceiver {
 
+    SoundKeeper mSoundKeeper;
+
     @Override
     public void onReceive(Context context, Intent intent) {
         if(intent.getAction().equals(Intent.ACTION_USER_PRESENT)){
             Log.e("SCREEN", "User unlock the phone!");
+            mSoundKeeper = SoundKeeper.getInstance(context);
+            mSoundKeeper.playSound();
         }
+
+
         }
 
     }
