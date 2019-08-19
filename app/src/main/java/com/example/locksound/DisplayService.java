@@ -90,7 +90,7 @@ public class DisplayService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.e(TAG, "onStartCommand");
-       // mSoundKeeper =  intent.getParcelableExtra("Sound");
+
         return START_STICKY;
     }
 
